@@ -38,8 +38,13 @@ label values usa_dummy usa_dummyl
 * includes people who are not scored in all 4 categories, but less 
 * (1.67 or 2.33) as possible values wouldnt occur otherwise). The 
 * difference is only a couple observations (22 missing vs. 4 missing)
+
+* Update: copy of scaled variable.
 gen resp_eng_score = V24 + V25 + V26 + V27
 label var resp_eng_score "Combined resp. score of speak/understand/read/write English. 4-16"
+
+gen resp_eng_score_scaled = C4
+label var resp_eng_score "Combined resp. score of speak/understand/read/write English. Scaled 1-4"
 
 * Creating a variable for respondent foreign language ability;
 * essentially same thing as before, not quite the same as C6
@@ -53,6 +58,30 @@ clonevar father_edu = V36
 label var father_edu "Father's highest education level, wave 1"
 clonevar mother_edu = V41
 label var mother_edu "Mother's highest education level, wave 1"
+
+* Update: mother and father education, rescaled into years
+* Chose 17 for college grad or more, could also be 16
+clonevar father_edu_yrs = father_edu
+replace father_edu_yrs = 3 if father_edu == 1
+replace father_edu_yrs = 7 if father_edu == 2
+replace father_edu_yrs = 10 if father_edu == 3
+replace father_edu_yrs = 12 if father_edu == 4
+replace father_edu_yrs = 14 if father_edu == 5
+replace father_edu_yrs = 17 if father_edu == 6
+label var father_edu "Father's highest education level, in years, wave 1"
+label define father_edu_yrsl 3 "Elementary school or less" 7 "Middle school or less" 10 "Some high school" 12 "High school graduate" 14 "Some college/university" 17 "College graduate or more"
+label values father_edu father_edu_yrsl
+
+clonevar mother_edu_yrs = mother_edu
+replace mother_edu_yrs = 3 if mother_edu == 1
+replace mother_edu_yrs = 7 if mother_edu == 2
+replace mother_edu_yrs = 10 if mother_edu == 3
+replace mother_edu_yrs = 12 if mother_edu == 4
+replace mother_edu_yrs = 14 if mother_edu == 5
+replace mother_edu_yrs = 17 if mother_edu == 6
+label var mother_edu "Mother's highest education level, in years, wave 1"
+label define mother_edu_yrsl 3 "Elementary school or less" 7 "Middle school or less" 10 "Some high school" 12 "High school graduate" 14 "Some college/university" 17 "College graduate or more"
+label values mother_edu mother_edu_yrsl
 
 * Creating dummy for use of foreign language in home
 clonevar home_foreign_use = V57
@@ -165,11 +194,18 @@ label values p_foreign_child pfc
 * 1) Unscaled version of C20. Exactly same o.w.
 * 2) A composite of partner/spouses English ability. There is not another 
 * version of this in the data set.
+* 3) Update: scaled versions of both.
 gen p_eng_score = P28A + P28B + P28C + P28D
 label var p_eng_score "Combined parent score of speak/understand/read/write English. 4-16"
 
+gen p_eng_score_scaled = C20
+label var p_eng_score "Combined parent score of speak/understand/read/write English. Scaled 1-4"
+
 gen p_partner_eng_score = P29A + P29B + P29C + P29D
 label var p_partner_eng_score "Combined spouse/partner score of speak/understand/read/write English. 4-16"
+
+gen p_partner_eng_score_scaled = p_partner_eng_score / 4
+label var p_partner_eng_score "Combined spouse/partner score of speak/understand/read/write English. Scaled 1-4"
 
 * Dummies for the above scores.  1 if good or very good in all 4 English ability
 * categories (3 or 4), and 0 if low ability (1 or 2) in any of the categories
@@ -197,3 +233,132 @@ clonevar p_income = P56
 
 * Outcome variable for the years of education attained, from wave 3
 clonevar yrs_ed = V407A
+
+* More variables!
+
+* Dummy variable for parent's home ownership, wave 1
+clonevar own_home = V42
+replace own_home = 0 if V42 > 1 & V42 < 6
+label var own_home "1 if parent's own their home, wave 1"
+label define own_homel 0 "Parent's do not own home" 1 "Parent's own home"
+label values own_home own_homel
+
+* Dummy for grade, 1 if ninth, 0 if 8th, wave 1.
+* Drops the single 7th grader, and the single 10th grader.
+gen ninth_grade = .
+replace ninth_grade = 0 if V5 == 8
+replace ninth_grade = 1 if V5 == 9
+label var ninth_grade "1 if resp. in ninth grade, wave 1"
+label define ninth_gradel 0 "Eighth grade" 1 "Ninth grade"
+label values ninth_grade ninth_gradel
+
+* Dummies for country/region of respondent's national origin (8 of them)
+* My gen of variables is fine, since there are no missing values
+gen cuban = 0
+replace cuban = 1 if V21 == 1
+label var cuban "1 if resp. identifies Cuban, wave 1"
+label define cubanl 0 "Not Cuban" 1 "Cuban"
+label values cuban cubanl
+
+gen mexican = 0
+replace mexican = 1 if V21 == 2
+label var mexican "1 if resp. identifies Mexican, wave 1"
+label define mexicanl 0 "Not Mexican" 1 "Mexican"
+label values mexican mexicanl
+
+gen central_amer = 0
+replace central_amer = 1 if V21 == 3 | V21 == 8 | V21 == 9 | V21 == 10 | V21 == 11 | V21 == 12
+label var central_amer "1 if resp. identifies Central American, wave 1"
+label define central_amerl 0 "Not Central American" 1 "Central American"
+label values central_amer central_amerl
+
+gen carribean = 0
+replace carribean = 1 if V21 == 7 | V21 == 21 | V21 == 22 | V21 == 23
+label var carribean "1 if resp. identifies Carribean, wave 1"
+label define carribeanl 0 "Not Carribean" 1 "Carribean"
+label values carribean carribeanl
+
+gen south_amer = 0
+replace south_amer = 1 if V21 == 4 | V21 == 13 | V21 == 14 | V21 == 15 | V21 == 16 | V21 == 17 | V21 == 18
+label var south_amer "1 if resp. identifies South American, wave 1"
+label define south_amerl 0 "Not South American" 1 "South American"
+label values south_amer south_amerl
+
+gen filipino = 0
+replace filipino = 1 if V21 == 30
+label var filipino "1 if resp. identifies Filipino, wave 1"
+label define filipinol 0 "Not Filipino" 1 "Filipino"
+label values filipino filipinol
+
+gen se_asian = 0
+replace se_asian = 1 if V21 == 31 | V21 == 32 | V21 == 33 | V21 == 34
+label var se_asian "1 if resp. identifies Southeast Asian, wave 1"
+label define se_asianl 0 "Not Southeast Asian" 1 "Southeast Asian"
+label values se_asian se_asianl
+
+gen e_or_s_asian = 0
+replace e_or_s_asian = 1 if V21 == 31 | V21 == 32 | V21 == 33 | V21 == 34
+label var e_or_s_asian "1 if resp. identifies East or South Asian, wave 1"
+label define e_or_s_asianl 0 "Not East or South Asian" 1 "East or South Asian"
+label values e_or_s_asian e_or_s_asianl
+
+* Dummies for family structure (4 of them)
+clonevar both_bio_parents = V28
+replace both_bio_parents = 1 if V28 == 1
+replace both_bio_parents = 0 if V28 > 1 & V28 < 9
+label var both_bio_parents "1 if resp. lives w/ both biological parents, wave 1"
+label define both_bio_parentsl 0 "Not both biological parents" 1 "Both biological parents"
+label values both_bio_parents both_bio_parentsl
+
+clonevar bio_step_parents = both_bio_parents 
+* This method is easier since most vals already set to 0.
+replace bio_step_parents = 1 if V28 == 2 | V28 == 3
+replace bio_step_parents = 0 if V28 == 1
+label var bio_step_parents "1 if resp. lives w/ a biological parent and a step parent, wave 1"
+label define bio_step_parentsl 0 "Not bio w/ step parent" 1 "Biological parent with step parent"
+label values bio_step_parents bio_step_parentsl
+
+clonevar one_parent = both_bio_parents 
+* This method is easier since most vals already set to 0.
+replace one_parent = 1 if V28 == 2 | V28 == 3
+replace one_parent = 0 if V28 == 1
+label var one_parent "1 if resp. lives w/ father or mother alone, wave 1"
+label define one_parentl 0 "Not only with one parent" 1 "One parent alone"
+label values one_parent one_parentl
+
+clonevar other_guardian = both_bio_parents 
+* This method is easier since most vals already set to 0.
+replace other_guardian = 1 if V28 == 2 | V28 == 3
+replace other_guardian = 0 if V28 == 1
+label var other_guardian "1 if resp. lives w/ an adult guardian, wave 1"
+label define other_guardianl 0 "Not with a guardian" 1 "Adult guardian"
+label values other_guardian other_guardianl
+
+* Copying variables for percent race/ethnicity in schools, wave 1
+clonevar schl_white = V140
+label var schl_white "Percent of white students in school, wave 1"
+
+clonevar schl_black = V141
+label var schl_black "Percent of black students in school, wave 1"
+
+clonevar schl_hisp = V142
+label var schl_hisp "Percent of Hispanic students in school, wave 1"
+
+clonevar schl_asian = V143
+label var schl_asian "Percent of Asian students in school, wave 1"
+
+* Copying variable for percent eligible for subs. lunch in schools, wave 1
+clonevar schl_lunch = V145
+label var schl_lunch "Percent of students eligible for subs. lunch in school, wave 1"
+
+* Copying variable for total school population, wave 1
+clonevar schl_pop = V146
+label var schl_pop "Total school population, wave 1"
+
+* Creating log of total school population, wave 1
+gen schl_log_pop = log(schl_pop)
+label var schl_log_pop "Log of total school population, wave 1"
+
+* Copying dummy for inner-city school, wave 1
+clonevar schl_inner = V147
+label var schl_inner "1 if resp. attending inner-city school, wave 1"
