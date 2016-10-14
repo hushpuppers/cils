@@ -362,3 +362,6 @@ label var schl_log_pop "Log of total school population, wave 1"
 * Copying dummy for inner-city school, wave 1
 clonevar schl_inner = V147
 label var schl_inner "1 if resp. attending inner-city school, wave 1"
+
+* Pairwise correlations between the proxies for parent language knowledge
+pwcorr diff_lang_parents home_foreign_use p_eng_score p_eng_score_scaled p_partner_eng_score p_partner_eng_score_scaled
