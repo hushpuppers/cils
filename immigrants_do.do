@@ -44,7 +44,7 @@ gen resp_eng_score = V24 + V25 + V26 + V27
 label var resp_eng_score "Combined resp. score of speak/understand/read/write English. 4-16"
 
 gen resp_eng_score_scaled = C4
-label var resp_eng_score "Combined resp. score of speak/understand/read/write English. Scaled 1-4"
+label var resp_eng_score_scaled "Combined resp. score of speak/understand/read/write English. Scaled 1-4"
 
 * Creating a variable for respondent foreign language ability;
 * essentially same thing as before, not quite the same as C6
@@ -199,13 +199,13 @@ gen p_eng_score = P28A + P28B + P28C + P28D
 label var p_eng_score "Combined parent score of speak/understand/read/write English. 4-16"
 
 gen p_eng_score_scaled = C20
-label var p_eng_score "Combined parent score of speak/understand/read/write English. Scaled 1-4"
+label var p_eng_score_scaled "Combined parent score of speak/understand/read/write English. Scaled 1-4"
 
 gen p_partner_eng_score = P29A + P29B + P29C + P29D
 label var p_partner_eng_score "Combined spouse/partner score of speak/understand/read/write English. 4-16"
 
 gen p_partner_eng_score_scaled = p_partner_eng_score / 4
-label var p_partner_eng_score "Combined spouse/partner score of speak/understand/read/write English. Scaled 1-4"
+label var p_partner_eng_score_scaled "Combined spouse/partner score of speak/understand/read/write English. Scaled 1-4"
 
 * Dummies for the above scores.  1 if good or very good in all 4 English ability
 * categories (3 or 4), and 0 if low ability (1 or 2) in any of the categories
@@ -362,6 +362,18 @@ label var schl_log_pop "Log of total school population, wave 1"
 * Copying dummy for inner-city school, wave 1
 clonevar schl_inner = V147
 label var schl_inner "1 if resp. attending inner-city school, wave 1"
+
+* Copying variable for school ID, wave 1; for clustering
+clonevar schl_id = V4
+label var schl_id "ID number for resp. school, wave 1"
+
+* Outcome dummy for graduating high school, from wave 3
+clonevar hschl_grad = V407A
+replace hschl_grad = 1 if V407A > 11 | V407A < 19
+replace hschl_grad = 0 if V407A == 10
+label var hschl_grad "1 if resp. grad from high school, wave 3"
+label define hschl_gradl 0 "Did not graduate high school" 1 "Graduated high school"
+label values hschl_grad hschl_gradl
 
 * Pairwise correlations between the proxies for parent language knowledge
 pwcorr diff_lang_parents home_foreign_use p_eng_score p_eng_score_scaled p_partner_eng_score p_partner_eng_score_scaled
