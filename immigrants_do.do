@@ -297,7 +297,7 @@ label define se_asianl 0 "Not Southeast Asian" 1 "Southeast Asian"
 label values se_asian se_asianl
 
 gen e_or_s_asian = 0
-replace e_or_s_asian = 1 if V21 == 31 | V21 == 32 | V21 == 33 | V21 == 34
+replace e_or_s_asian = 1 if V21 == 36 | V21 == 37 | V21 == 38 | V21 == 39 | V21 == 40 | V21 == 41 | V21 == 42
 label var e_or_s_asian "1 if resp. identifies East or South Asian, wave 1"
 label define e_or_s_asianl 0 "Not East or South Asian" 1 "East or South Asian"
 label values e_or_s_asian e_or_s_asianl
@@ -320,7 +320,7 @@ label values bio_step_parents bio_step_parentsl
 
 clonevar one_parent = both_bio_parents 
 * This method is easier since most vals already set to 0.
-replace one_parent = 1 if V28 == 2 | V28 == 3
+replace one_parent = 1 if V28 == 4 | V28 == 5
 replace one_parent = 0 if V28 == 1
 label var one_parent "1 if resp. lives w/ father or mother alone, wave 1"
 label define one_parentl 0 "Not only with one parent" 1 "One parent alone"
@@ -328,7 +328,7 @@ label values one_parent one_parentl
 
 clonevar other_guardian = both_bio_parents 
 * This method is easier since most vals already set to 0.
-replace other_guardian = 1 if V28 == 2 | V28 == 3
+replace other_guardian = 1 if V28 == 7
 replace other_guardian = 0 if V28 == 1
 label var other_guardian "1 if resp. lives w/ an adult guardian, wave 1"
 label define other_guardianl 0 "Not with a guardian" 1 "Adult guardian"
