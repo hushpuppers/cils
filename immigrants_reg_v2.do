@@ -1,4 +1,4 @@
-/*	Research: Effects of parental knoregledge of
+/*	Research: Effects of parental knowledge of
 		English on immigrant children's outcomes
 	
 	Data set:	ICPSR 20520
