@@ -92,3 +92,19 @@ estimates store w3
 quietly reg hschl_grad p_partner_eng_score_scaled usa_dummy age1 female ninth_grade mother_edu_yrs father_edu_yrs both_bio_parents bio_step_parents one_parent other_guardian own_home cuban mexican central_amer carribean south_amer filipino se_asian e_or_s_asian schl_white schl_black schl_hisp schl_asian schl_lunch schl_log_pop schl_inner, robust cluster(schl_id)
 estimates store w4
 estimates table w1 w2 w3 w4, varwidth(25)  b(%6.3f) star(0.10 0.05 0.01) stats(N r2_a)
+
+
+
+* New regressions
+//foreach var in diff_lang_parents home_foreign_use p_eng_score_scaled p_partner_eng_score_scaled p_foreign_child p_foreign_residence {
+//reg math_cent 'var' age1 female ninth_grade mother_edu_yrs father_edu_yrs both_bio_parents bio_step_parents one_parent other_guardian own_home cuban mexican central_amer carribean south_amer filipino se_asian e_or_s_asian schl_white schl_black schl_hisp schl_asian schl_lunch schl_log_pop schl_inner if usa_dummy==1, robust cluster(schl_id)
+//outreg, merge
+//}
+local controlVars age1 female ninth_grade mother_edu_yrs father_edu_yrs both_bio_parents bio_step_parents one_parent other_guardian own_home cuban mexican central_amer carribean south_amer filipino se_asian e_or_s_asian schl_white schl_black schl_hisp schl_asian schl_lunch schl_log_pop schl_inner
+local i = 1
+foreach langvar in diff_lang_parents home_foreign_use p_eng_score_scaled p_partner_eng_score_scaled p_foreign_child p_foreign_residence {
+quietly reg hschl_grad `langvar' usa_dummy age1 female ninth_grade mother_edu_yrs father_edu_yrs both_bio_parents bio_step_parents one_parent other_guardian own_home cuban mexican central_amer carribean south_amer filipino se_asian e_or_s_asian schl_white schl_black schl_hisp schl_asian schl_lunch schl_log_pop schl_inner, robust cluster(schl_id)
+estimates store w`i'
+local ++i
+}
+estimates table w1 w2 w3 w4 w5 w6, varwidth(25)  b(%6.3f) star(0.10 0.05 0.01) stats(N r2_a)
