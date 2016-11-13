@@ -198,14 +198,14 @@ label values p_foreign_child pfc
 gen p_eng_score = P28A + P28B + P28C + P28D
 label var p_eng_score "Combined parent score of speak/understand/read/write English. 4-16"
 
-gen p_eng_score_scaled = C20
-label var p_eng_score_scaled "Combined parent score of speak/understand/read/write English. Scaled 1-4"
+gen p_scld = C20
+label var p_scld "Combined parent score of speak/understand/read/write English. Scaled 1-4"
 
 gen p_partner_eng_score = P29A + P29B + P29C + P29D
 label var p_partner_eng_score "Combined spouse/partner score of speak/understand/read/write English. 4-16"
 
-gen p_partner_eng_score_scaled = p_partner_eng_score / 4
-label var p_partner_eng_score_scaled "Combined spouse/partner score of speak/understand/read/write English. Scaled 1-4"
+gen p_part_scld = p_partner_eng_score / 4
+label var p_part_scld "Combined spouse/partner score of speak/understand/read/write English. Scaled 1-4"
 
 * Dummies for the above scores.  1 if good or very good in all 4 English ability
 * categories (3 or 4), and 0 if low ability (1 or 2) in any of the categories
@@ -376,7 +376,7 @@ label define hschl_gradl 0 "Did not graduate high school" 1 "Graduated high scho
 label values hschl_grad hschl_gradl
 
 * Pairwise correlations between the proxies for parent language knowledge
-pwcorr diff_lang_parents home_foreign_use p_eng_score p_eng_score_scaled p_partner_eng_score p_partner_eng_score_scaled
+pwcorr diff_lang_parents home_foreign_use p_eng_score p_scld p_partner_eng_score p_part_scld
 
 * Some more variables for regressions (added 10/30/2016)
 
@@ -409,3 +409,28 @@ replace home_foreign_use_always = 0 if V57 == 1 | V57 == 2 | V57 == 3
 label var home_foreign_use_always "1 if people in home use non_Eng lang always, wave 1"
 label define home_foreign_use_alwaysl 0 "Seldom/Time-to-time/Often" 1 "Always"
 label values home_foreign_use_always home_foreign_use_alwaysl
+
+* Dummy for student prefers Eng, but non-Eng always used at home
+gen pref_eng_nonenghome = (1 - resp_pref)*home_foreign_use_always
+label var pref_eng_nonenghome "1 if home use non_Eng lang always but resp. pref Eng, wave 1"
+label define prefl 0 "Not one" 1 "Home always uses non-Eng lang, but resp. pref Eng"
+label values pref_eng_nonenghome prefl
+
+* Variable for highest education of either parent
+* If one is missing, uses parent that has data
+gen parents_edyrs = max(father_edu_yrs, mother_edu_yrs)
+label var parents_edyrs "Highest education of either parent, wave 1"
+
+* Dummy for parent born in US
+gen parents_usaborn = V9 + V15
+replace parents_usaborn = 0 if V9 < 110 & V9 > 0
+replace parents_usaborn = 0 if V15 < 110 & V15 > 0
+replace parents_usaborn = 1 if V9 == 0 | V15 == 0
+label var parents_usaborn "1 if one parent born in the US, wave 1"
+label define parusal 0 "Neither parent born in US" 1 "One parent born in US"
+label values parents_usaborn parusal
+
+* Average English ability of parents
+gen p_avg_eng_score = (p_part_scld + p_scld)/2
+replace p_avg_eng_score = max(p_part_scld, p_scld) if missing(p_part_scld, p_scld)
+label var p_avg_eng_score "Average of parent/partner Eng score. Scaled 1-4"
